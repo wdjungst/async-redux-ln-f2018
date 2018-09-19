@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import {
@@ -10,9 +10,14 @@ import {
   Divider,
   Button,
 } from 'semantic-ui-react'
+import AppForm from './AppForm'
 
 class Apps extends React.Component {
-  state = { category: '' }
+  state = { category: '', showForm: false }
+
+  toggleForm = () => {
+    this.setState({ showForm: !this.state.showForm }) 
+  }
 
   categoryOptions = () => {
     const { categories } = this.props
@@ -59,32 +64,41 @@ class Apps extends React.Component {
   }
 
   render() {
-    const { category } = this.state
+    const { category, showForm } = this.state
 
     return (
       <Container>
         <Header as="h3" textAlign="center">Apps</Header>
-        <Dropdown
-          placeholder="Filter by..."
-          fluid
-          selection
-          options={this.categoryOptions()}
-          value={category}
-          onChange={this.handleChange}
-        />
-        { category && 
-            <Button
-              fluid
-              basic
-              onClick={ () => this.setState({ category: '' }) }
-            >
-              Clear Filter: {category}
-            </Button>
-        }
-        <Divider />
-        <Card.Group itemsPerRow={4} stackable>
-          { this.apps() }
-        </Card.Group>
+        <Button onClick={this.toggleForm}>
+          { showForm ? 'Hide Form' : 'Show Form' }
+        </Button>
+        { showForm ?
+            <AppForm closeForm={this.toggleForm} />
+            :
+            <Fragment>
+              <Dropdown
+                placeholder="Filter by..."
+                fluid
+                selection
+                options={this.categoryOptions()}
+                value={category}
+                onChange={this.handleChange}
+              />
+              { category && 
+                  <Button
+                    fluid
+                    basic
+                    onClick={ () => this.setState({ category: '' }) }
+                  >
+                    Clear Filter: {category}
+                  </Button>
+              }
+              <Divider />
+              <Card.Group itemsPerRow={4} stackable>
+                { this.apps() }
+              </Card.Group>
+            </Fragment>
+          }
       </Container>
     )
   }
