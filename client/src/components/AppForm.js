@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { updateApp, addApp } from '../reducers/apps'
-import { Form } from 'semantic-ui-react'
+import { Form, Dropdown } from 'semantic-ui-react'
 
 class AppForm extends React.Component {
   initialState = {
@@ -33,6 +33,11 @@ class AppForm extends React.Component {
     closeForm()
   }
 
+  catOptions = () => {
+    const { categories } = this.props
+    return categories.map( c => ( { key: c, text: c, value: c  } ) )
+  }
+
   render() {
     const { name, description, category, version, price, author } = this.state
     return (
@@ -50,10 +55,10 @@ class AppForm extends React.Component {
           onChange={this.handleChange}
           label="Description"
         />
-        <Form.Input
-          name="category"
+        <Dropdown
+          options={this.catOptions()}
           value={category}
-          onChange={this.handleChange}
+          onChange={(_, {value}) => this.setState({ category: value })}
           label="Category"
         />
         <Form.Input
@@ -82,8 +87,14 @@ class AppForm extends React.Component {
   }
 }
 
-export default connect()(AppForm)
+const mapStateToProps = (state) => {
+  const { apps } = state
+  const categories = [...new Set(apps.map( a => a.category ))]
+  return { 
+    categories,
+  }
+}
 
 
-
+export default connect(mapStateToProps)(AppForm)
 
